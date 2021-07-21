@@ -1,12 +1,21 @@
 const {Schema, Types} = require('mongoose')
 
-moduel.exports = new Schema({
+module.exports = new Schema({
 
-_id : Types.Objetid,
-userId : user,
-country : String,
+//_id : Types.ObjectId,
+userId :	{
+    type: Type.ObjectId,
+    ref: "User",
+},
+country : {
+    type : String,
+    required : true,
+},
     
-street : String,
+street : {
+    type : String,
+    required : true,
+},
 height : String,
 floor : String,
 apartment : String,

@@ -1,21 +1,24 @@
-const {Schema, Types} = require('mongoose')
 
-moduel.exports = new Schema({
+const {Schema, model,} = require('mongoose') //Schema es estructura de datos, el modelo es
+const md5 = require('md5')
 
-_id : Types.Objetid,
+let User = new Schema({
+
+//_id : Types.ObjectId,
 
 email : {
-    Type : String,
-    require : true
+    type : String,
+    required : true,
+    unique : true,
 },
 
 password : {
-    Type : String,
-    require : true
+    type : String,
+    required : true,
 },
 
-registracionDate : {
-    Type : Date,
+registrationDate : {
+    type : Date,
     default : Date.now
 },
 
@@ -24,16 +27,33 @@ confirmationDate : Date,
 ConfirmationToken : {
     
     type : String,
-    required : true
-},
-    defautl : function () {
+    required : true,
 
-        return '...'
+    default : function () {
+
+        return md5(Date.now())
+        
     }
     
+},
+
+
 
 
 
 
 
 })
+
+User.statics.findByToken = function (Token) {
+    return this.findOne({ConfirmationToken : Token})
+    
+}
+
+
+User.methods.findByEmail = function (cb) {
+   
+    return model('User').find({email:this.email}, cb)
+}
+
+module.exports = model('User',User)
