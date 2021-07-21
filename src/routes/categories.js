@@ -3,18 +3,19 @@
 const router = require ('express').Router();
 const category = require ('../schemas/category.js')
 const {body, validationResault} = require ('express-validator')
-
+const {responWithError} = require ('../helpers.js')
 
 
 //name : requerido, minimo 3 caracteres max 50
 // categoryId : debe existir en la base de datos
-// let validatePost = [
-// body('name').notEmpty(),
-// body('name').islength({min : 3, max : 50}),
+let validatePost = [
+body('name').notEmpty(),
+body('name').isLength({min : 3, max : 50})
 
-//    ]
+   ]
 
 
+  
 
 
 
@@ -49,10 +50,13 @@ router.get('/:id',function (req, res) {
         })
     })
 
-router.post('/', function (req, res){
 
-// let errors = validationResault(req)
-// console.log(errors)
+
+router.post('/',validatePost, function (req, res){
+
+let errors = validationResault(req)
+
+if (errors.isEmpty()) {
 
     let Category = new category(req.body)
 
@@ -61,12 +65,14 @@ router.post('/', function (req, res){
     .then (function (Category) {
     res.status(201).send ({message : Category._id})
     })
-    .catch(function (err){
-        console.log(err)
-        res.status(422).send ({message : err})
-    
-        })
+
+} else {
+    responWithError(res,errors.mapped())
+
+  
+}
 })
+
 
 
 router.delete('/:id', function (req,res){
@@ -93,10 +99,7 @@ category
     res.send ({message:"updated"})
 
 })
-.catch(function (err){
-    res.send ({mesage : 'error'})
-    console.log(err)
-})
+.catch(err=> responWithError(res,err))
 
 
 })
